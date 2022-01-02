@@ -1,6 +1,6 @@
-{ mkDerivation, aeson, aeson-pretty, base, lib, openapi3, relude
-, servant, servant-openapi3, servant-server, servant-swagger-ui
-, text, wai, warp
+{ mkDerivation, aeson, aeson-pretty, base, lens, lib, openapi3
+, relude, servant, servant-openapi3, servant-server
+, servant-swagger-ui, text, wai, warp
 }:
 mkDerivation {
   pname = "servant-api-doc";
@@ -9,8 +9,8 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    aeson aeson-pretty base openapi3 relude servant servant-openapi3
-    servant-server servant-swagger-ui text
+    aeson aeson-pretty base lens openapi3 relude servant
+    servant-openapi3 servant-server servant-swagger-ui text
   ];
   executableHaskellDepends = [ base relude wai warp ];
   license = "unknown";

@@ -4,6 +4,18 @@
 module Server where
 
 -- openapi3
+
+-- openapi3
+
+-- openapi3
+
+-- openapi3
+
+-- openapi3
+
+-- openapi3
+
+-- openapi3
 import Data.OpenApi (OpenApi)
 
 -- servant-api-doc

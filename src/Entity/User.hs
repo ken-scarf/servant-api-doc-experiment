@@ -1,5 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Entity.User where
 
@@ -7,19 +10,28 @@ module Entity.User where
 import Data.Aeson
   ( FromJSON (..),
     ToJSON (..),
+    Options(fieldLabelModifier),
     defaultOptions,
     genericParseJSON,
     genericToJSON,
   )
 
+-- lens
+import Control.Lens
+
 -- openapi3
 import Data.OpenApi
-  ( ToSchema (..),
-    defaultSchemaOptions,
-    genericDeclareNamedSchema,
+  ( HasRequired (..),
+    HasType (..),
+    NamedSchema (..),
+    OpenApiType (..),
+    ToSchema (..),
+    declareSchemaRef,
   )
+import Data.OpenApi.Lens (HasProperties (..))
 
 -- servant-api-doc
+import Common
 import Import
 
 type UserId = Int
@@ -38,10 +50,31 @@ usersDb =
   ]
 
 instance ToJSON User where
-  toJSON = genericToJSON defaultOptions
+  toJSON =
+    genericToJSON
+      defaultOptions
+        { fieldLabelModifier = labelModifier "User"
+        }
 
 instance FromJSON User where
-  parseJSON = genericParseJSON defaultOptions
+  parseJSON =
+    genericParseJSON
+      defaultOptions
+        { fieldLabelModifier = labelModifier "User"
+        }
 
 instance ToSchema User where
-  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+  declareNamedSchema _ = do
+    uId <- declareSchemaRef @UserId Proxy
+    uName <- declareSchemaRef @Text Proxy
+    uEmail <- declareSchemaRef @Text Proxy
+    pure $
+      NamedSchema (Just "User") $
+        mempty
+          & type_ ?~ OpenApiObject
+          & properties
+            .~ [ ("id", uId),
+                 ("name", uName),
+                 ("email", uEmail)
+               ]
+          & required .~ ["id", "name", "email"]
